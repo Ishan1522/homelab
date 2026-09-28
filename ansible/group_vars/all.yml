@@ -1,0 +1,8 @@
+# Packages every managed machine should have. Only add things that are
+# already installed everywhere, or check mode won't come back clean.
+baseline_packages:
+  - curl
+  - git
+  - htop
+  - rsync
+  - vim

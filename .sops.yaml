@@ -1,0 +1,6 @@
+# Which key encrypts which files.
+# Generate a key:  age-keygen -o ~/.config/sops/age/keys.txt
+# Paste the "public key: age1..." line below.
+creation_rules:
+  - path_regex: secrets/.*\.sops\.ya?ml$
+    age: CHANGEME_age1_public_key

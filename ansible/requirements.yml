@@ -1,0 +1,4 @@
+collections:
+  - name: ansible.posix      # mount
+  - name: community.general
+  - name: community.sops     # vars plugin for *.sops.yaml

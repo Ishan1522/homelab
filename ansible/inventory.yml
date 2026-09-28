@@ -1,0 +1,28 @@
+# Everything is reached over Tailscale, so this works from the Mac or the Surface (WSL)
+# whether you're on ResNet, eduroam, or off campus.
+#
+# The containers need sshd + your key. CT 201 already has it (VS Code Remote-SSH).
+# For CT 206, either add sshd + your key, or comment it out until you do.
+all:
+  children:
+    pve:
+      hosts:
+        pve:
+          ansible_host: CHANGEME-pve          # Proxmox host's tailnet name
+          ansible_user: root
+
+    streamers:                              # containers running XFCE + Sunshine
+      hosts:
+        game-dev:
+          ansible_host: CHANGEME-ct201      # CT 201
+          ansible_user: root
+          ct_id: 201
+        game-playing:
+          ansible_host: CHANGEME-ct206      # CT 206
+          ansible_user: root
+          ct_id: 206
+
+    # Not managed yet: add these when you're ready.
+    # brainy-stack:  CT 203 (~29 compose services; manage the compose file, not the containers)
+    # npm:           CT 205 (Nginx Proxy Manager)
+    # macbook:       data node (macOS; Ansible works, but needs its own role)

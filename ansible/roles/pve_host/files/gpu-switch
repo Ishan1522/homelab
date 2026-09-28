@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# SCAFFOLD-PLACEHOLDER: reference version written from notes, not your real script.
+# Replace with: cp snapshots/host/gpu-switch ansible/roles/pve_host/files/gpu-switch
+#
+# CT 201 (game-dev) and CT 206 (game-playing) share one GPU and can't both hold DRM master.
+# This hands the display+stream to one of them without stopping either container.
+set -euo pipefail
+
+DEV_CT=201
+PLAY_CT=206
+
+case "${1:-}" in
+  dev)  on=$DEV_CT;  off=$PLAY_CT ;;
+  play) on=$PLAY_CT; off=$DEV_CT ;;
+  *)    echo "usage: gpu-switch dev|play" >&2; exit 2 ;;
+esac
+
+pct exec "$off" -- systemctl stop sunshine.service xfce-display.service || true
+pct exec "$on"  -- systemctl start xfce-display.service
+pct exec "$on"  -- systemctl start sunshine.service
+echo "GPU display now on CT $on"

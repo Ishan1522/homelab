@@ -1,0 +1,4 @@
+# Keys are merged into sunshine.conf one line each. Only put keys here you
+# actually changed from default; copy the values from snapshots/ct206/sunshine.conf.
+sunshine_settings:
+  audio_sink: sink-sunshine-stereo   # the fix: Sunshine had "auto_null"

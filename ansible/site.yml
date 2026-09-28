@@ -1,0 +1,14 @@
+# Adopt-first: every task here should report "ok" (no change) against the box
+# as it is today. If `make check` wants to change something, fix the repo first.
+
+- name: Proxmox host
+  hosts: pve
+  roles:
+    - baseline
+    - pve_host
+
+- name: Streaming containers (XFCE + Sunshine + PulseAudio)
+  hosts: streamers
+  roles:
+    - baseline
+    - sunshine_stream

@@ -1,0 +1,65 @@
+- name: Host vars are filled in (no CHANGEME left)
+  ansible.builtin.assert:
+    that:
+      - "'CHANGEME' not in vault_nfs_src"
+      - "'CHANGEME' not in vault_nfs_path"
+      - "'CHANGEME' not in vault_nfs_opts"
+    fail_msg: "Fill in ansible/host_vars/pve.yml from snapshots/host/fstab first."
+    quiet: true
+
+# ---- Tailscale: everything else depends on it ----
+- name: Gather service state
+  ansible.builtin.service_facts:
+
+- name: Check tailscaled is running
+  ansible.builtin.assert:
+    that: ansible_facts.services['tailscaled.service'].state | default('') == 'running'
+    fail_msg: "tailscaled isn't running on the host. The NFS mount and every tailnet hop depend on it."
+    quiet: true
+
+# ---- vault NFS mount (the one that silently dropped and crash-looped CT 203) ----
+- name: Vault NFS mount is in fstab and mounted
+  ansible.posix.mount:
+    src: "{{ vault_nfs_src }}"
+    path: "{{ vault_nfs_path }}"
+    fstype: nfs
+    opts: "{{ vault_nfs_opts }}"
+    state: mounted
+
+# ---- CT 203 bind mount: verify only, never `pct set` ----
+- name: Read container mountpoints
+  ansible.builtin.command: grep -E '^mp[0-9]+:' /etc/pve/lxc/{{ vault_bind_ct }}.conf
+  register: _ct_mps
+  changed_when: false
+  failed_when: false
+  check_mode: false
+
+- name: Check the vault is bind-mounted into its container
+  ansible.builtin.assert:
+    that: _ct_mps.stdout_lines | select('search', '^mp[0-9]+:\s*' ~ (vault_nfs_path | regex_escape) ~ ',') | list | length > 0
+    fail_msg: >-
+      CT {{ vault_bind_ct }} has no mpN entry for {{ vault_nfs_path }}. Add it by hand in
+      /etc/pve/lxc/{{ vault_bind_ct }}.conf (e.g. mp0: {{ vault_nfs_path }},mp=/vault) and restart the CT.
+    quiet: true
+
+# ---- gpu-switch ----
+- name: Resolve gpu-switch source
+  ansible.builtin.set_fact:
+    _gpu_switch_src: >-
+      {{ lookup('ansible.builtin.first_found',
+                {'files': [inventory_hostname ~ '/gpu-switch', 'gpu-switch'],
+                 'paths': [role_path ~ '/files']}) }}
+
+- name: Check gpu-switch is not the scaffold reference
+  ansible.builtin.assert:
+    that: "'SCAFFOLD-PLACEHOLDER' not in lookup('ansible.builtin.file', _gpu_switch_src)"
+    fail_msg: "Copy snapshots/host/gpu-switch over {{ _gpu_switch_src }} first."
+    quiet: true
+
+- name: Install gpu-switch
+  ansible.builtin.copy:
+    src: "{{ _gpu_switch_src }}"
+    dest: /usr/local/bin/gpu-switch
+    owner: root
+    group: root
+    mode: "0755"

@@ -1,0 +1,22 @@
+# Per-host file in files/<inventory_hostname>/ wins over the shared one in files/.
+- name: "Resolve {{ f.name }}"
+  ansible.builtin.set_fact:
+    _src: "{{ lookup('ansible.builtin.first_found', {'files': [inventory_hostname ~ '/' ~ f.name, f.name], 'paths': [role_path ~ '/files']}) }}"
+
+- name: "Check it is not the scaffold reference: {{ f.name }}"
+  ansible.builtin.assert:
+    that: "'SCAFFOLD-PLACEHOLDER' not in lookup('ansible.builtin.file', _src)"
+    fail_msg: >-
+      {{ _src }} is still the scaffold reference. Copy the real one:
+      mkdir -p {{ role_path }}/files/{{ inventory_hostname }} &&
+      cp snapshots/ct{{ ct_id }}/{{ f.name }} {{ role_path }}/files/{{ inventory_hostname }}/
+    quiet: true
+
+- name: "Install {{ f.dest }}"
+  ansible.builtin.copy:
+    src: "{{ _src }}"
+    dest: "{{ f.dest }}"
+    owner: root
+    group: root
+    mode: "{{ f.mode }}"
+  notify: Systemd daemon-reload

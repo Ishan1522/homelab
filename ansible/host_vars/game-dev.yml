@@ -1,0 +1,2 @@
+# Fill from snapshots/ct201/sunshine.conf. Empty means "don't touch sunshine.conf".
+sunshine_settings: {}

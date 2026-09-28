@@ -1,0 +1,14 @@
+sunshine_files:
+  - name: pulse-start.sh
+    dest: /usr/local/bin/pulse-start.sh
+    mode: "0755"
+  - name: xfce-display.service
+    dest: /etc/systemd/system/xfce-display.service
+    mode: "0644"
+  - name: sunshine.service
+    dest: /etc/systemd/system/sunshine.service
+    mode: "0644"
+
+# Sunshine runs as root in these containers. Check snapshots/ct*/ if yours differs.
+sunshine_conf: /root/.config/sunshine/sunshine.conf
+sunshine_settings: {}

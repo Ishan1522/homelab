@@ -1,0 +1,15 @@
+# SCAFFOLD-PLACEHOLDER: reference version written from notes.
+# Replace with your copy from snapshots/ct<ID>/sunshine.service.
+[Unit]
+Description=Sunshine game stream host
+After=xfce-display.service
+Requires=xfce-display.service
+
+[Service]
+Environment=DISPLAY=:0
+ExecStart=/usr/bin/sunshine
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

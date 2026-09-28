@@ -1,0 +1,2 @@
+skip_list:
+  - var-naming[no-role-prefix]   # role vars are shared with host_vars on purpose

@@ -1,0 +1,34 @@
+# Deliberately NOT here: enabling or starting xfce-display/sunshine.
+# gpu-switch on the host decides which container holds the GPU.
+
+- name: Stream files
+  ansible.builtin.include_tasks: deploy_file.yml
+  loop: "{{ sunshine_files }}"
+  loop_control:
+    loop_var: f
+    label: "{{ f.name }}"
+
+- name: Apply sunshine.conf settings
+  ansible.builtin.lineinfile:
+    path: "{{ sunshine_conf }}"
+    regexp: '^\s*{{ item.key }}\s*='
+    line: "{{ item.key }} = {{ item.value }}"
+  loop: "{{ sunshine_settings | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  notify: Sunshine restart reminder
+
+# The stray LightDM that grabbed DRM master and froze the stream.
+- name: Is lightdm installed?
+  ansible.builtin.stat:
+    path: "{{ item }}"
+  loop:
+    - /lib/systemd/system/lightdm.service
+    - /usr/lib/systemd/system/lightdm.service
+  register: _lightdm
+
+- name: Keep lightdm masked
+  ansible.builtin.systemd_service:
+    name: lightdm.service
+    masked: true
+  when: _lightdm.results | selectattr("stat.exists") | list | length > 0

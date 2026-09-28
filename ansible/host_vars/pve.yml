@@ -1,0 +1,9 @@
+# ---- vault NFS mount (Mac → Proxmox host → bind-mounted into CT 203) ----
+# Copy these EXACTLY from the line in snapshots/host/fstab so check mode says "ok".
+vault_nfs_src: "CHANGEME-mac-tailscale-ip:/Users/ishan/Obsidian-Vault"
+vault_nfs_path: /mnt/CHANGEME-vault
+vault_nfs_opts: "CHANGEME,x-systemd.automount"
+
+# CT 203 must have a mountpoint whose host side is vault_nfs_path.
+# Checked, never edited (see README guardrails).
+vault_bind_ct: 203

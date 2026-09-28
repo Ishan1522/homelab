@@ -1,0 +1,21 @@
+# OpenTofu
+tofu/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+# keep tofu/.terraform.lock.hcl committed
+
+# secrets: only *.sops.yaml (encrypted) is committed
+secrets/*
+!secrets/*.sops.yaml
+!secrets/*.example
+!secrets/README.md
+*.dec.yaml
+.vault_pass
+
+# misc
+*.retry
+__pycache__/
+.DS_Store

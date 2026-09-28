@@ -1,0 +1,7 @@
+- name: Systemd daemon-reload
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
+- name: Sunshine restart reminder
+  ansible.builtin.debug:
+    msg: "sunshine.conf changed on {{ inventory_hostname }}. Run `gpu-switch dev|play` on the host to pick it up."

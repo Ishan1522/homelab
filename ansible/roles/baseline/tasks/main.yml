@@ -1,0 +1,4 @@
+- name: Baseline packages present
+  ansible.builtin.apt:
+    name: "{{ baseline_packages + (baseline_packages_extra | default([])) }}"
+    state: present

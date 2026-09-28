@@ -1,0 +1,14 @@
+# SCAFFOLD-PLACEHOLDER: reference version written from notes.
+# Replace with your copy from snapshots/ct<ID>/xfce-display.service.
+[Unit]
+Description=XFCE session on the GPU display (for Sunshine X11 capture)
+After=network.target
+
+[Service]
+Environment=DISPLAY=:0
+ExecStartPre=/usr/local/bin/pulse-start.sh
+ExecStart=/usr/bin/startx /usr/bin/startxfce4 -- :0 vt1
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
