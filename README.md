@@ -1,4 +1,4 @@
-# homelab
+# homelab - TEMPLATE for now. Also how did claude even get commit credit bruh
 
 Infrastructure-as-code for the MS-S1 Max Proxmox box (+ the MacBook data node).
 
